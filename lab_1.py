@@ -56,7 +56,7 @@ def load(con, records, target_table):
     try:
         con.execute("BEGIN;")
         con.execute(f"DROP TABLE IF EXISTS {target_table};")
-        con.execute(f"CREATE OR REPLACE TABLE {target_table} (stock string, open float, high float, low float, close float, volume int, date DATE primary key);")
+        con.execute(f"CREATE OR REPLACE TABLE {target_table} (stock string, open float, high float, low float, close float, volume int, date DATE);")
         for r in records:
             stock = r["0. stock"]
             open = r["1. open"]
