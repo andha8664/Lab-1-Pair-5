@@ -11,19 +11,10 @@ import requests
 
 def return_snowflake_conn():
 
-    user_id = Variable.get('snowflake_userid')
-    password = Variable.get('snowflake_password')
-    account = Variable.get('snowflake_account')
-
-    # Establish a connection to Snowflake
-    conn = snowflake.connector.connect(
-        user=user_id,
-        password=password,
-        account=account,  # Example: 'xyz12345.us-east-1'
-        warehouse='compute_wh',
-        database='dev'
-    )
-    # Create a cursor object
+    hook = SnowflakeHook(snowflake_conn_id='snowflake_conn')
+    
+    # Execute the query and fetch results
+    conn = hook.get_conn()
     return conn.cursor()
 
 
