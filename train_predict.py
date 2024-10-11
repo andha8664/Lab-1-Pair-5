@@ -27,12 +27,12 @@ def train(cur, train_input_table, train_view, forecast_function_name):
     """
 
     create_view_sql = f"""CREATE OR REPLACE VIEW {train_view} AS SELECT
-        DATE, CLOSE, SYMBOL
+        DATE, CLOSE, STOCK
         FROM {train_input_table};"""
 
     create_model_sql = f"""CREATE OR REPLACE SNOWFLAKE.ML.FORECAST {forecast_function_name} (
         INPUT_DATA => SYSTEM$REFERENCE('VIEW', '{train_view}'),
-        SERIES_COLNAME => 'SYMBOL',
+        SERIES_COLNAME => 'STOCK',
         TIMESTAMP_COLNAME => 'DATE',
         TARGET_COLNAME => 'CLOSE',
         CONFIG_OBJECT => {{ 'ON_ERROR': 'SKIP' }}
@@ -66,10 +66,10 @@ def predict(cur, forecast_function_name, train_input_table, forecast_table, fina
         CREATE OR REPLACE TABLE {forecast_table} AS SELECT * FROM TABLE(RESULT_SCAN(:x));
     END;"""
     create_final_table_sql = f"""CREATE OR REPLACE TABLE {final_table} AS
-        SELECT SYMBOL, DATE, CLOSE AS actual, NULL AS forecast, NULL AS lower_bound, NULL AS upper_bound
+        SELECT STOCK, DATE, CLOSE AS actual, NULL AS forecast, NULL AS lower_bound, NULL AS upper_bound
         FROM {train_input_table}
         UNION ALL
-        SELECT replace(series, '"', '') as SYMBOL, ts as DATE, NULL AS actual, forecast, lower_bound, upper_bound
+        SELECT replace(series, '"', '') as STOCK, ts as DATE, NULL AS actual, forecast, lower_bound, upper_bound
         FROM {forecast_table};"""
 
     try:
@@ -87,8 +87,8 @@ with DAG(
     tags=['ML', 'ELT'],
     schedule = '30 2 * * *'
 ) as dag:
-
-    train_input_table = "dev.raw_data.market_data"
+    
+    train_input_table = "dev.raw_data.market_data" #the table you use to store the stock data
     train_view = "dev.adhoc.market_data_view"
     forecast_table = "dev.adhoc.market_data_forecast"
     forecast_function_name = "dev.analytics.predict_stock_price"
