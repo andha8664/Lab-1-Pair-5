@@ -51,12 +51,12 @@ def transform(stock_1, stock_2, data1, data2):
 @task
 def load(con, records, target_table):
     # conn: snowflake connection
-    # records: Holds of transformed data
+    # records: Holds data
     # target_table: Table used to store transformed data
     try:
         con.execute("BEGIN;")
         con.execute(f"DROP TABLE IF EXISTS {target_table};")
-        con.execute(f"CREATE OR REPLACE TABLE {target_table} (stock string, open float, high float, low float, close float, volume int, date DATE);")
+        con.execute(f"CREATE OR REPLACE TABLE {target_table} (stock string, open float, high float, low float, close float, volume int, date timestamp);")
         for r in records:
             stock = r["0. stock"]
             open = r["1. open"]
