@@ -85,7 +85,7 @@ with DAG(
     start_date = datetime(2024,9,21),
     catchup=False,
     tags=['ML', 'ELT'],
-    schedule = '30 2 * * *'
+    schedule = '30 6 * * *'
 ) as dag:
     
     train_input_table = "dev.raw_data.market_data" #the table you use to store the stock data
